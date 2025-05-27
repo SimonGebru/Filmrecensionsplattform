@@ -7,6 +7,7 @@ const {
   updateMovie,
   deleteMovie,
 } = require("../controllers/movieController");
+const { getMovieRatings } = require("../controllers/movieController");
 
 const protect = require("../middleware/auth");
 const admin = require("../middleware/admin"); 
@@ -18,6 +19,8 @@ router.delete("/:id", protect, admin, deleteMovie);
 
 // Öppna routes
 router.get("/", getAllMovies);
+router.get("/ratings", getMovieRatings);
 router.get("/:id", getMovieById);
+
 
 module.exports = router;

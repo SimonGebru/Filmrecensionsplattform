@@ -1,4 +1,5 @@
 const Movie = require("../models/Movie");
+const Review = require("../models/Review");
 
 //  POST /api/movies – Lägg till en ny film
 const createMovie = async (req, res) => {
@@ -83,10 +84,45 @@ const deleteMovie = async (req, res) => {
     }
   };
 
+  const getMovieRatings = async (req, res) => {
+    try {
+      
+      const movies = await Movie.find();
+  
+     
+      const movieRatings = await Promise.all(
+        movies.map(async (movie) => {
+          const reviews = await Review.find({ movieId: movie._id });
+  
+          let averageRating = null;
+  
+          if (reviews.length > 0) {
+            const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+            averageRating = total / reviews.length;
+          }
+  
+          return {
+            _id: movie._id,
+            title: movie.title,
+            director: movie.director,
+            releaseYear: movie.releaseYear,
+            genre: movie.genre,
+            averageRating: averageRating?.toFixed(2) || "Inga betyg än"
+          };
+        })
+      );
+  
+      res.json(movieRatings);
+    } catch (err) {
+      res.status(500).json({ message: "Kunde inte hämta betyg" });
+    }
+  };
+
   module.exports = {
     createMovie,
     getAllMovies,
     getMovieById,
     updateMovie,
     deleteMovie,
+    getMovieRatings,
   };
