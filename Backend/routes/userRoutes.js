@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   registerUser,
   loginUser,
-  updateUserRole
+  updateUserRole,
 } = require("../controllers/userController");
 
 const protect = require("../middleware/auth");
