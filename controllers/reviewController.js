@@ -23,7 +23,10 @@ const createReview = async (req, res) => {
 // GET /api/reviews
 const getAllReviews = async (req, res) => {
   try {
-    const reviews = await Review.find().populate("userId", "username").populate("movieId", "title");
+    const reviews = await Review.find()
+      .populate("userId", "username")
+      .populate("movieId", "title");
+
     res.json(reviews);
   } catch (err) {
     res.status(500).json({ message: "Kunde inte hämta recensioner" });
@@ -33,12 +36,28 @@ const getAllReviews = async (req, res) => {
 // GET /api/reviews/:id
 const getReviewById = async (req, res) => {
   try {
-    const review = await Review.findById(req.params.id).populate("userId", "username").populate("movieId", "title");
+    const review = await Review.findById(req.params.id)
+      .populate("userId", "username")
+      .populate("movieId", "title");
+
     if (!review) return res.status(404).json({ message: "Recension hittades inte" });
 
     res.json(review);
   } catch (err) {
     res.status(500).json({ message: "Fel vid hämtning av recension" });
+  }
+};
+
+// GET /api/movies/:id/reviews
+const getReviewsForMovie = async (req, res) => {
+  try {
+    const reviews = await Review.find({ movieId: req.params.id })
+      .populate("userId", "username")
+      .populate("movieId", "title");
+
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: "Kunde inte hämta recensioner för filmen" });
   }
 };
 
@@ -51,7 +70,6 @@ const updateReview = async (req, res) => {
 
     if (!review) return res.status(404).json({ message: "Recension hittades inte" });
 
-    
     if (review.userId.toString() !== req.user.id) {
       return res.status(403).json({ message: "Inte tillåtet att ändra denna recension" });
     }
@@ -89,6 +107,7 @@ module.exports = {
   createReview,
   getAllReviews,
   getReviewById,
+  getReviewsForMovie, 
   updateReview,
   deleteReview,
 };
