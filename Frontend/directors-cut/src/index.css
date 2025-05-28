@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-image: url('/src/assets/film-texture.png'); /* Justera sökvägen om filen ligger annorlunda */
+  background-size: cover;
+  background-repeat: repeat;
+  background-blend-mode: overlay;
+  background-color: rgba(0, 0, 0, 0.92); /* Mörk overlay */
+  color: white; /* Textfärg – eftersom @apply text-white inte funkar här */
+}

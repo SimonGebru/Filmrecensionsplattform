@@ -86,35 +86,44 @@ const deleteMovie = async (req, res) => {
 
   const getMovieRatings = async (req, res) => {
     try {
-      
-      const movies = await Movie.find();
+      const result = await Review.aggregate([
+        {
+          $group: {
+            _id: "$movieId",
+            avgRating: { $avg: "$rating" },
+            reviewCount: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            from: "movies",
+            localField: "_id",
+            foreignField: "_id",
+            as: "movieData",
+          },
+        },
+        {
+          $unwind: "$movieData",
+        },
+        {
+          $project: {
+            _id: 0,
+            title: "$movieData.title",
+            director: "$movieData.director",
+            releaseYear: "$movieData.releaseYear",
+            genre: "$movieData.genre",
+            avgRating: { $round: ["$avgRating", 2] },
+            reviewCount: 1,
+          },
+        },
+        {
+          $sort: { avgRating: -1 },
+        },
+      ]);
   
-     
-      const movieRatings = await Promise.all(
-        movies.map(async (movie) => {
-          const reviews = await Review.find({ movieId: movie._id });
-  
-          let averageRating = null;
-  
-          if (reviews.length > 0) {
-            const total = reviews.reduce((sum, review) => sum + review.rating, 0);
-            averageRating = total / reviews.length;
-          }
-  
-          return {
-            _id: movie._id,
-            title: movie.title,
-            director: movie.director,
-            releaseYear: movie.releaseYear,
-            genre: movie.genre,
-            averageRating: averageRating?.toFixed(2) || "Inga betyg än"
-          };
-        })
-      );
-  
-      res.json(movieRatings);
+      res.json(result);
     } catch (err) {
-      res.status(500).json({ message: "Kunde inte hämta betyg" });
+      res.status(500).json({ message: "Kunde inte hämta betyg", error: err.message });
     }
   };
 
