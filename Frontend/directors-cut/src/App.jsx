@@ -7,6 +7,8 @@ import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import Movies from './pages/Movies'; 
 import MovieDetails from "./pages/MovieDetails";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   useEffect(() => {
@@ -34,6 +36,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} /> 
         <Route path="/movies/:id" element={<MovieDetails />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={Register } />
       </Routes>
     </>
   );

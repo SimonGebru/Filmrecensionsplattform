@@ -51,10 +51,17 @@ export default function MovieDetails() {
     }
 
     try {
-      const res = await axios.post(`http://localhost:5070/api/movies/${id}/reviews`, {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.post("http://localhost:5070/api/reviews", {
+        movieId: id,
         reviewer,
         rating,
         comment,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setReviews([...reviews, res.data]);
