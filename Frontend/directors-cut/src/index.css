@@ -7,6 +7,48 @@ body {
   background-size: cover;
   background-repeat: repeat;
   background-blend-mode: overlay;
-  background-color: rgba(0, 0, 0, 0.92); /* Mörk overlay */
-  color: white; /* Textfärg – eftersom @apply text-white inte funkar här */
+  background-color: rgba(0, 0, 0, 0.92);
+  color: white;
+}
+
+/* Zoom-effekt på knappar etc */
+@keyframes zoomSlow {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-zoom {
+  animation: zoomSlow 3s ease-in-out infinite;
+}
+
+/* 🟡 Elegant scrollbar - visas först vid hover */
+.scrollbar-hide {
+  scrollbar-width: none;              /* Firefox */
+  -ms-overflow-style: none;           /* IE/Edge */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-hide::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.3s ease;
+}
+
+.scrollbar-hide:hover::-webkit-scrollbar-thumb {
+  background-color: #FFD700;
 }
