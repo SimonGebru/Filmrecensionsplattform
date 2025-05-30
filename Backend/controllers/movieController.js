@@ -127,6 +127,22 @@ const deleteMovie = async (req, res) => {
     }
   };
 
+  // För att vi in all innehåll smidigare för det visuella i min frontend
+  const createManyMovies = async (req, res) => {
+    const movies = req.body;
+  
+    if (!Array.isArray(movies)) {
+      return res.status(400).json({ message: "Förväntade en array av filmer" });
+    }
+  
+    try {
+      const createdMovies = await Movie.insertMany(movies);
+      res.status(201).json(createdMovies);
+    } catch (err) {
+      res.status(500).json({ message: "Kunde inte skapa filmer", error: err.message });
+    }
+  };
+
   module.exports = {
     createMovie,
     getAllMovies,
@@ -134,4 +150,5 @@ const deleteMovie = async (req, res) => {
     updateMovie,
     deleteMovie,
     getMovieRatings,
+    createManyMovies,
   };
