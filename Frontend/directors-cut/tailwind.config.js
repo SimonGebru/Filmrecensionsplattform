@@ -3,6 +3,7 @@ import plugin from 'tailwind-scrollbar';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class", // 🌙 Aktiverar dark mode via klass
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -35,6 +36,6 @@ export default {
     },
   },
   plugins: [
-    plugin, 
+    plugin,
   ],
-}
+};

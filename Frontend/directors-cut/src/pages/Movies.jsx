@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,7 +8,8 @@ import { useAuth } from "../context/AuthContext";
 export default function Movies() {
   const [moviesByGenre, setMoviesByGenre] = useState({});
   const [loading, setLoading] = useState(true);
-  const { logout, user } = useAuth(); // 👈 hämtar user
+  const [ratings, setRatings] = useState([]);
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,6 +17,9 @@ export default function Movies() {
       try {
         const res = await axios.get("http://localhost:5070/api/movies");
         const movieData = res.data;
+
+        const ratingRes = await axios.get("http://localhost:5070/api/movies/ratings");
+        setRatings(ratingRes.data);
 
         const moviesWithPosters = await Promise.all(
           movieData.map(async (movie) => {
@@ -26,14 +31,22 @@ export default function Movies() {
                 ...movie,
                 poster: omdbRes.data.Response === "True" ? omdbRes.data.Poster : null,
               };
-            // eslint-disable-next-line no-unused-vars
             } catch (err) {
               return { ...movie, poster: null };
             }
           })
         );
 
-        const grouped = moviesWithPosters.reduce((acc, movie) => {
+        const ratedMovies = moviesWithPosters.map((movie) => {
+          const match = ratingRes.data.find((r) => r._id === movie._id);
+          return {
+            ...movie,
+            avgRating: match?.avgRating || null,
+            reviewCount: match?.reviewCount || 0,
+          };
+        });
+
+        const grouped = ratedMovies.reduce((acc, movie) => {
           const genre = movie.genre || "Okänd";
           if (!acc[genre]) acc[genre] = [];
           acc[genre].push(movie);
@@ -53,15 +66,15 @@ export default function Movies() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-background transition-colors duration-300">
         <div className="text-accent text-xl animate-pulse">Laddar filmer...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-white px-6 py-12">
-      {/* Knapp-rad med logga ut och ev. adminpanel */}
+    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text px-6 py-12 transition-colors duration-300">
+      {/* Knapp-rad med logga ut och adminpanel */}
       <div className="flex justify-end items-center gap-4 max-w-7xl mx-auto mb-6">
         {user?.role === "admin" && (
           <button
@@ -93,7 +106,7 @@ export default function Movies() {
             <div className="flex gap-6 overflow-x-auto max-w-7xl px-4 min-h-[400px] scrollbar-hide hover:scrollbar-thin hover:scrollbar-thumb-accent hover:scrollbar-track-transparent rounded-md">
               {movies.map((movie) => (
                 <Link to={`/movies/${movie._id}`} key={movie._id} className="flex-shrink-0">
-                  <div className="bg-black/50 w-[220px] h-[340px] mt-3 rounded-xl shadow-glow overflow-hidden transform transition-transform duration-300 hover:scale-105">
+                  <div className="bg-gray-100 dark:bg-black/50 w-[220px] h-[370px] mt-3 rounded-xl shadow-glow overflow-hidden transform transition-transform duration-300 hover:scale-105">
                     <img
                       src={movie.poster || "https://via.placeholder.com/300x400?text=Poster"}
                       alt={movie.title}
@@ -103,10 +116,15 @@ export default function Movies() {
                       <h3 className="text-base font-semibold leading-tight line-clamp-2">
                         {movie.title}
                       </h3>
-                      <p className="text-sm text-white/80 flex items-center gap-1">
+                      {movie.avgRating && (
+                        <p className="text-sm text-yellow-400 flex items-center gap-1">
+                          ⭐ {movie.avgRating} ({movie.reviewCount})
+                        </p>
+                      )}
+                      <p className="text-sm text-black dark:text-white/80 flex items-center gap-1">
                         <DirectorIcon className="text-accent" /> {movie.director}
                       </p>
-                      <p className="text-sm text-white/60 flex items-center gap-1">
+                      <p className="text-sm text-black/60 dark:text-white/60 flex items-center gap-1">
                         <CalendarIcon className="text-accent" /> {movie.releaseYear}
                         <span className="mx-1">•</span>
                         <GenreIcon className="text-accent" /> {movie.genre}

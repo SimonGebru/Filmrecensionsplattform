@@ -9,12 +9,25 @@ export default function MovieDetails() {
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [ratingInfo, setRatingInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Form state
   const [reviewer, setReviewer] = useState("");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+
+  const fetchRating = async () => {
+    try {
+      const res = await axios.get("http://localhost:5070/api/movies/ratings");
+      const found = res.data.find((r) => r._id === id);
+      if (found) {
+        setRatingInfo(found);
+      }
+    } catch (err) {
+      console.error("Kunde inte hämta betyg", err);
+    }
+  };
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -41,6 +54,7 @@ export default function MovieDetails() {
 
     fetchMovie();
     fetchReviews();
+    fetchRating();
   }, [id]);
 
   const handleSubmit = async (e) => {
@@ -65,6 +79,7 @@ export default function MovieDetails() {
       });
 
       setReviews([...reviews, res.data]);
+      fetchRating(); 
       setReviewer("");
       setRating(0);
       setComment("");
@@ -111,6 +126,14 @@ export default function MovieDetails() {
           <p className="text-white/80 mb-1"><strong>Regissör:</strong> {movie.director}</p>
           <p className="text-white/60 mb-1"><strong>År:</strong> {movie.releaseYear}</p>
           <p className="text-white/60"><strong>Genre:</strong> {movie.genre}</p>
+
+          {/* ⭐ Genomsnittligt betyg */}
+          {ratingInfo && (
+            <div className="mt-4 flex items-center gap-2 text-yellow-400 text-lg">
+              <FaStar className="text-xl" />
+              {ratingInfo.avgRating} ({ratingInfo.reviewCount} recensioner)
+            </div>
+          )}
         </div>
       </div>
 

@@ -107,7 +107,7 @@ const deleteMovie = async (req, res) => {
         },
         {
           $project: {
-            _id: 0,
+            _id: "$movieData._id",
             title: "$movieData.title",
             director: "$movieData.director",
             releaseYear: "$movieData.releaseYear",

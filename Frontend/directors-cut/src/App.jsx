@@ -10,6 +10,9 @@ import MovieDetails from "./pages/MovieDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminPanel from "./pages/AdminPanel";
+import AdminCreate from "./components/AdminCreate";     // ✅ Uppdaterad path
+import AdminMovies from "./components/AdminMovies";     // ✅ Uppdaterad path
+import DarkModeToggle from "./components/DarkModeToggle";
 
 function App() {
   useEffect(() => {
@@ -17,8 +20,11 @@ function App() {
   }, []);
 
   return (
-    <>
-      
+    <div className="min-h-screen bg-white text-black dark:bg-background dark:text-text transition-colors duration-300">
+      {/* Dark Mode Toggle-knapp */}
+      <DarkModeToggle />
+
+      {/* Toast-notiser */}
       <Toaster 
         position="top-center"
         toastOptions={{
@@ -32,7 +38,7 @@ function App() {
         }}
       />
 
-    
+      {/* Sidor */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} /> 
@@ -40,8 +46,10 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin/create" element={<AdminCreate />} />
+        <Route path="/admin/movies" element={<AdminMovies />} />
       </Routes>
-    </>
+    </div>
   );
 }
 
