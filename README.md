@@ -6,3 +6,5 @@ Detta är backend-delen av uppgiften Filmrecensionsplattform, där användare ka
 Länk till videopresentation
 
 # Exempelanrop till alla endpoints hittar du i mappen Postman/ i detta repo.
+
+# I min backend/-mapp hittar du även en .env.example med alla miljövariabler som används.
